@@ -16,6 +16,7 @@ import name.hashbrown.getmeadrink.service.LicenseService;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -89,21 +90,10 @@ public class MapActivity extends FragmentActivity {
                     }
                 })
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<MarkerOptions>() {
+                .subscribe(new Action1<MarkerOptions>() {
                     @Override
-                    public void onNext(final MarkerOptions marker) {
+                    public void call(final MarkerOptions marker) {
                         mMap.addMarker(marker);
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        Log.i("Map", "All licenses added to map!");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("Map", e.getMessage());
-                        e.printStackTrace();
                     }
                 });
     }
