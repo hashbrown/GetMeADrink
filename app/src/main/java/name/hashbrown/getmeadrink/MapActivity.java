@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import name.hashbrown.getmeadrink.model.License;
 import name.hashbrown.getmeadrink.service.LicenseService;
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -29,7 +30,9 @@ public class MapActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        licenseService = new LicenseService();
+        licenseService = LicenseService.getInstance();
+
+
         setUpMapIfNeeded();
     }
 

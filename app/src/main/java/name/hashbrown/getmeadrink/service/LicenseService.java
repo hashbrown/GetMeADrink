@@ -10,11 +10,15 @@ import rx.functions.Func1;
 
 public class LicenseService {
 
+    private static LicenseService INSTANCE = new LicenseService();
+
     private static final String WEB_SERVICE_BASE_URL = "http://services.arcgis.com/afSMGVsC7QlRK1kZ/arcgis/rest/services";
 
     private MPLSOpenDataService dataService;
+    private static Observable<License> cachedLicenseResponse;
 
-    public LicenseService(){
+
+    private LicenseService(){
 
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(WEB_SERVICE_BASE_URL)
@@ -24,20 +28,30 @@ public class LicenseService {
         dataService = restAdapter.create(MPLSOpenDataService.class);
     }
 
-    public Observable<License> getOnSalesLiquorLicenses(){
-        return dataService.getOnSaleLiquorLicenses()
-                .flatMap(new Func1<LicenseResponse, Observable<Feature>>() {
-                    @Override
-                    public Observable<Feature> call(LicenseResponse apiResponse) {
-                        return Observable.from(apiResponse.features);
-                    }
-                })
-                .map(new Func1<Feature, License>() {
-                    @Override
-                    public License call(Feature feature) {
-                        return feature.license;
-                    }
-                });
+    public synchronized Observable<License> getOnSalesLiquorLicenses(){
+
+        if(cachedLicenseResponse == null){
+            cachedLicenseResponse = dataService.getOnSaleLiquorLicenses()
+                    .flatMap(new Func1<LicenseResponse, Observable<Feature>>() {
+                        @Override
+                        public Observable<Feature> call(LicenseResponse apiResponse) {
+                            return Observable.from(apiResponse.features);
+                        }
+                    })
+                    .map(new Func1<Feature, License>() {
+                        @Override
+                        public License call(Feature feature) {
+                            return feature.license;
+                        }
+                    })
+                    .cache()
+                    .onBackpressureBuffer();
+        }
+        return cachedLicenseResponse;
+    }
+
+    public static LicenseService getInstance(){
+        return INSTANCE;
     }
 
 }
