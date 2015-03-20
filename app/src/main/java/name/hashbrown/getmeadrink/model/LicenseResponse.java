@@ -3,7 +3,7 @@ package name.hashbrown.getmeadrink.model;
 import java.util.List;
 
 
-public class ApiResponse {
+public class LicenseResponse {
 
     public List<Feature> features;
 
