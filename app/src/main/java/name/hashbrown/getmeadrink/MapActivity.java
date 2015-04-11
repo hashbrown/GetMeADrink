@@ -76,7 +76,6 @@ public class MapActivity extends FragmentActivity {
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.98, -93.2638),11));
         licenseService.getOnSalesLiquorLicenses()
-                .observeOn(AndroidSchedulers.mainThread())
                 .map(new Func1<License, MarkerOptions>() {
                     @Override
                     public MarkerOptions call(License license) {
@@ -88,6 +87,7 @@ public class MapActivity extends FragmentActivity {
                                 .icon(BitmapDescriptorFactory.defaultMarker(markerColor));
                     }
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<MarkerOptions>() {
                     @Override
